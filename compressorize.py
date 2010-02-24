@@ -44,6 +44,9 @@ def setconfig(path_or_object=None):
         working_dir = os.getcwd()
         path = path_or_object if path_or_object is not None else \
                os.path.join(working_dir, "compressorize.yaml")
+        # If the user passed a relative path, transform to absolute
+        if not os.path.isabs(path):
+            path = os.path.join(working_dir, path)
         if not os.path.exists(path):
             raise ValueError("Cannot find YAML config file at `%s`" % path)
             return
