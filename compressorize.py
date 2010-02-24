@@ -1,38 +1,113 @@
 #!/usr/bin/env python
 
-import os, commands
-import yaml
+'''
+# compressorize.py
+
+Provides the main guts of the compressorize package.
+
+If using config files, PyYAML is required.
+
+## Methods
+
+* [set_config](#set_config)
+* [compress](#compress)
+'''
+
+import os
+import commands
+import sys
+import glob
 
 # Save the current working directory and the script's directory
+working_dir = os.getcwd()
+script_dir = os.path.dirname(__file__)
 
-# Look for the compressorize.yaml file in the scripts directory, or use whatever was passed as a commandline argument
+# Global private config variable
+_config = null
 
-# If compressorPath is specified and exists, use it; otherwise look for the compressor next to the script.
-# Exit with error if we can't find the compressor
+def set_config(path_or_object=null):
+    '''
+    ### set_config    {#set_config}
+    
+    Handles setting up the config object, usually from a YAML file.
+    
+    _path_or_object_ (str or dict)
+    :    Optional; if a string is passed in, it will be used as a path
+         to a YAML file. If a dict is passed it, it will be used as
+         the config object. If null will default to `"current working
+         directory"/compressorize.yaml`
+    
+    **Returns void**
+    '''
+    if path_or_object is null or isinstance(path_or_object, basestring):
+        # Importing here means it won't break a second Python project
+        # that isn't using YAML config files
+        import yaml
+        
+        path = path_or_object if path_or_object is not null else \
+               os.path.join(working_dir, "compressorize.yaml")
+        if not os.path.exists(path):
+            raise ValueError("Cannot find YAML config file at `%s`" % path)
+            return
+        f = open(path)
+        _config = yaml.load(f)
+        f.close()
+    elif isinstance(path_or_object, dict):
+        _config = path_or_object
 
-# Check to see if we have recipes, or if things are living at the root level; if at root, load it into a single array recipe
+def compress(path_or_object=null):
+    '''
+    ### compress    {#compress}
+    
+    Executes the actual compression and combination of the files.
+    
+    _path_or_object_ (str or dict)
+    :    Optional; only necessary if not explicitly using
+         [set_config](#set_config). Identical to its argument.
+    
+    **Returns array of strings or null if no messages**
+    '''
+    if _config is null:
+        set_config(path_or_object)
+    
+    # Look for the compressor binary
+    if "compressorPath" in _config:
+        compressor = _config['compressorPath']
+    else:
+        possible_paths = glob.glob(
+            os.path.join(working_dir, 'yuicompressor*.jar')
+        )
+        if len(possible_paths) == 0:
+            compressor = ''
+        else:
+            # Names are typically yuicompressor-2.4.2.jar or similar
+            # So if we sort alphabetically, the last element is most recent
+            possible_paths.sort(reverse=True)
+            compressor = possible_paths[0]
+        if not os.path.exists(compressor):
+            raise ValueError("Cannot find YUICompressor at `%s`" % compressor)
+            return
+    
+    # Set up the recipes for later parsing
+    if 'recipes' in _config:
+        recipes = _config['recipes']
+    else:
+        # No recipe, so items must be in root
+        # Since we'll test for keys later, just toss the whole config in
+        recipes = [_config]
+    
+    # Process the recipes
+    for index, recipe in enumerate(recipes):
+        # Loop over the files and construct the string of them
+        # Figure out the final file name
+        # Put together the command with type variable, etc.
+        # Run the command and echo any errors or status messages
+        # Touch the file to update the date?
 
-# Loop over recipes
-# Loop over the files and construct the string of them
-# Figure out the final file name
-# Put together the command with type variable, etc.
-# Run the command and echo any errors or status messages
-# Touch the file to update the date?
+    # Everything's complete, let's exit!
 
-# Everything's complete, let's exit!
-
-
-# THIS STUFF WAS MY INITIAL ATTEMPT
-
-f = open('config.yaml')
-config = yaml.load(f)
-f.close()
-
-if not 'compressorPath' in config or not os.path.exists(config.compressorPath):
-    raise ValueError(
-        "YUI Compressor cannot be found at [%s]" % config.compressorPath
-    )
-
+# WHAT I HAD ORIGINALLY
+'''
 if not 'files' in config:
     raise ValueError("Required `files` array not present in config")
 
@@ -52,3 +127,10 @@ status, output = commands.getstatusoutput(
 
 if status > 0: 
     print output
+'''
+
+if __name__ == "__main__":
+    ouput = compress(sys.argv[1])
+    if output is not null:
+        for msg in output:
+            print(msg)
