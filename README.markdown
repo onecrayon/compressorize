@@ -6,7 +6,8 @@ Compressorize requires PyYAML and YUICompressor.
 
 ## Installation
 
-1. Run the following commands to install compressorize:
+1. Run the following commands to install compressorize (customizing your
+   install path appropriately):
    
         easy_install pyyaml
         cd /WHERE/TO/INSTALL
