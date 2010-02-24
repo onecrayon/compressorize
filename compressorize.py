@@ -97,37 +97,45 @@ def compress(path_or_object=None):
         recipes = [_config]
     
     # Process the recipes
+    messages = []
     for index, recipe in enumerate(recipes):
-        # Loop over the files and construct the string of them
-        # Figure out the final file name
-        # Put together the command with type variable, etc.
-        # Run the command and echo any errors or status messages
+        # Check for the required fields
+        if 'files' not in recipe:
+            raise ValueError("Error: required files array not found")
+            return
+        root = recipe['root'] if 'root' in recipe else ''
+        if root != '' and !os.path.isabs(root):
+            # Relative path, so construct relative to script directory
+            root = os.path.join(script_dir, root)
+            root = os.path.normpath(root)
+        # Grab the type based on the first file's extension
+        ext_start = recipe['files'][0].rfind('.')
+        if ext_start == -1:
+            # Couldn't find an extension, so default to JS
+            type = 'js'
+        else:
+            type = recipe['files'][0][ext_start+1:].lower()
+        # Setup the output name, or default to "compressed"
+        output = recipe['output'] if 'output' in recipe else \
+                 'compressed.' + type
+        # Construct the string of file names
+        files = ''
+        for file in recipe['files']:
+            files += os.path.join(root, file) + ' '
+        
+        command = 'cat ' + files + '| java -jar ' + compressor + \
+                  ' --type ' + type + ' -o ' + output
+        status, output = commands.getstatusouput(command)
+        if status > 0:
+            messages.append(output)
         # Touch the file to update the date?
-        pass
+    
     # Everything's complete, let's exit!
+    if len(messages) > 0:
+        return messages
+    else:
+        return None
 
-# WHAT I HAD ORIGINALLY
-'''
-if not 'files' in config:
-    raise ValueError("Required `files` array not present in config")
-
-root = config.jsRoot if 'jsRoot' in config else ''
-files = ''
-for file in config.files:
-    files += (root + file + ' ')
-
-finalName = config.output if 'output' in config else 'compressed.js'
-if 'jsRoot' in config:
-    finalName = config.jsRoot + finalName
-
-status, output = commands.getstatusoutput(
-    'cat ' + files + '| java -jar ' + config.compressorPath + \
-    ' --type js -o ' + finalName
-)
-
-if status > 0: 
-    print output
-'''
 
 if __name__ == "__main__":
     ouput = compress(sys.argv[1])

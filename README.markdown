@@ -53,10 +53,7 @@ compressorize folder is in your Python path.  Usage:
 
     import compressorize
     
-    # Optional; only call if no compressorize.yaml file
-    # in current working directory
-    compressorize.setConfig('/PATH/TO/compressorize.yaml')
-    # You can alternatively bypass YAML and just pass in a Python object
+    # You can bypass YAML by passing a Python object to set_config
     config = {
         files: ['mootools-core.js', 'mootools-more.js'],
         root: '../js/',
@@ -65,9 +62,11 @@ compressorize folder is in your Python path.  Usage:
     compressorize.setConfig(config)
     
     # Runs the actual compressing routine
-    output = compressorize.compress();
-    if output != '':
-        print("Compressorize error: " + output)
+    # Only need a path to YAML file if not using a Python object
+    output = compressorize.compress('/PATH/TO/compressorize.yaml');
+    if output is not None:
+        for msg in output:
+            print(msg)
 
 ## License
 

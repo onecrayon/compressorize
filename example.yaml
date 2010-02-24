@@ -9,19 +9,16 @@ recipes:
           - countdown.js
           - datepicker.js
           - global.js
-      # Name of your compressed file; defaults to "compressed"
+      # Name of your compressed file; defaults to "compressed" + type
       output: compressed.js
-      # Optional; will be appended to all files above. Relative to YAML doc.
+      # Optional; will be prepended to all files above. Relative to YAML doc.
       root: ../js/
-      # Optional; defaults to 'js'
-      type: js
       
       # this is a bare minimum example; will output "compressed.css"
     - files:
           - reset.css
           - screen.css
       root: ../css/
-      type: css
 
 # Optional; path to your yuicompressor binary
 # Necessary if the binary doesn't live next to compressorize.py script
