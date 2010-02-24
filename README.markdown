@@ -7,12 +7,12 @@ Compressorize requires PyYAML and YUICompressor.
 ## Installation
 
 1. Run the following commands to install compressorize:
-
-    easy_install pyyaml
-    cd /WHERE/TO/INSTALL
-    git clone git://github.com/onecrayon/compressorize.git
-    cd compressorize
-    chmod +x compressorize.py
+   
+        easy_install pyyaml
+        cd /WHERE/TO/INSTALL
+        git clone git://github.com/onecrayon/compressorize.git
+        cd compressorize
+        chmod +x compressorize.py
 
 2. Download [YUICompressor](http://developer.yahoo.com/yui/compressor/) and
    install it in your "compressorize" directory.
