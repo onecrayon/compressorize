@@ -58,12 +58,17 @@ compressorize folder is in your Python path.  Usage:
         files: ['mootools-core.js', 'mootools-more.js'],
         root: '../js/',
         compressorPath: '/PATH/TO/yuicompressor.jar'
+        # base_dir is a required element that tells the script where to
+        # base the relative root element
+        # Normally base_dir is automatically set to the YAML file's directory
+        base_dir: '/PATH/TO/PROJECT'
     }
-    compressorize.setConfig(config)
+    output = compressorize.compress(config)
     
-    # Runs the actual compressing routine
-    # Only need a path to YAML file if not using a Python object
+    # Or you can pass in a string to the YAML file
     output = compressorize.compress('/PATH/TO/compressorize.yaml');
+    
+    # Outputs None or an array of error messages
     if output is not None:
         for msg in output:
             print(msg)
