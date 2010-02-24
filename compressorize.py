@@ -23,9 +23,9 @@ working_dir = os.getcwd()
 script_dir = os.path.dirname(__file__)
 
 # Global private config variable
-_config = null
+_config = None
 
-def set_config(path_or_object=null):
+def set_config(path_or_object=None):
     '''
     ### set_config    {#set_config}
     
@@ -34,17 +34,17 @@ def set_config(path_or_object=null):
     _path_or_object_ (str or dict)
     :    Optional; if a string is passed in, it will be used as a path
          to a YAML file. If a dict is passed it, it will be used as
-         the config object. If null will default to `"current working
+         the config object. If None will default to `"current working
          directory"/compressorize.yaml`
     
     **Returns void**
     '''
-    if path_or_object is null or isinstance(path_or_object, basestring):
+    if path_or_object is None or isinstance(path_or_object, basestring):
         # Importing here means it won't break a second Python project
         # that isn't using YAML config files
         import yaml
         
-        path = path_or_object if path_or_object is not null else \
+        path = path_or_object if path_or_object is not None else \
                os.path.join(working_dir, "compressorize.yaml")
         if not os.path.exists(path):
             raise ValueError("Cannot find YAML config file at `%s`" % path)
@@ -55,7 +55,7 @@ def set_config(path_or_object=null):
     elif isinstance(path_or_object, dict):
         _config = path_or_object
 
-def compress(path_or_object=null):
+def compress(path_or_object=None):
     '''
     ### compress    {#compress}
     
@@ -65,9 +65,9 @@ def compress(path_or_object=null):
     :    Optional; only necessary if not explicitly using
          [set_config](#set_config). Identical to its argument.
     
-    **Returns array of strings or null if no messages**
+    **Returns array of strings or None if no messages**
     '''
-    if _config is null:
+    if _config is None:
         set_config(path_or_object)
     
     # Look for the compressor binary
@@ -103,7 +103,7 @@ def compress(path_or_object=null):
         # Put together the command with type variable, etc.
         # Run the command and echo any errors or status messages
         # Touch the file to update the date?
-
+        pass
     # Everything's complete, let's exit!
 
 # WHAT I HAD ORIGINALLY
@@ -131,6 +131,6 @@ if status > 0:
 
 if __name__ == "__main__":
     ouput = compress(sys.argv[1])
-    if output is not null:
+    if output is not None:
         for msg in output:
             print(msg)
