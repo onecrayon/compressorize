@@ -128,11 +128,11 @@ def compress(path_or_object=None):
         # Setup the output name, or default to "compressed"
         output = recipe['output'] if 'output' in recipe else \
                  'compressed.' + type
-        output = os.path.join(root, output)
+        output = os.path.join(root, output).replace(' ', '\ ')
         # Construct the string of file names
         files = ''
         for file in recipe['files']:
-            files += os.path.join(root, file) + ' '
+            files += os.path.join(root, file).replace(' ', '\ ') + ' '
         
         command = 'cat ' + files + '| java -jar ' + compressor + \
                   ' --type ' + type + ' -o ' + output
